@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#00a86b">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>GT Advanced Optimization Suite/title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --bg-primary: #f8f9fc;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --bg-glass-hover: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-primary: #00a86b;
+            --accent-secondary: #00cc6a;
+            --accent-warning: #ff8c00;
+            --accent-danger: #e53e3e;
+            --accent-info: #3182ce;
+            --border-color: rgba(0, 0, 0, 0.15);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 30px rgba(0, 168, 107, 0.2);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-glass: rgba(45, 55, 72, 0.9);
+            --bg-glass-hover: rgba(45, 55, 72, 0.95);
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --accent-primary: #48bb78;
+            --accent-secondary: #68d391;
+            --accent-warning: #ff8c00;
+            --accent-danger: #e53e3e;
+            --accent-info: #4d90fe;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 30px rgba(72, 187, 120, 0.3);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 168, 107, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 60%, rgba(49, 130, 206, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 140, 0, 0.03) 0%, transparent 50%);
+            animation: backgroundFloat 25s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-30px, -30px) rotate(1deg); }
+            66% { transform: translate(30px, -15px) rotate(-1deg); }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-info), var(--accent-warning));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: gradientShift 4s ease-in-out infinite, titlePulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 168, 107, 0.3));
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(0, 168, 107, 0.2);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 15px 15px 0 0;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 700;
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .nav-tab:hover {
+            background: var(--bg-glass-hover);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-primary);
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--accent-info), #2c5aa0);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(49, 130, 206, 0.25);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--bg-glass);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(49, 130, 206, 0.4);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #718096, #4a5568);
+            box-shadow: 0 8px 25px rgba(113, 128, 150, 0.25);
+        }
+        
+        .action-btn.warning {
+            background: linear-gradient(135deg, var(--accent-warning), #e07600);
+            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.25);
+        }
+        
+        .section {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .section:hover {
+            background: var(--bg-glass-hover);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 168, 107, 0.15);
+            border-color: var(--accent-primary);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 6px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 3px;
+            box-shadow: 0 0 15px rgba(0, 168, 107, 0.4);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+        }
+        
+        label {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group:hover label {
+            color: var(--accent-primary);
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="password"],
+        select,
+        textarea {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+            width: 100%;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 20px rgba(0, 168, 107, 0.2), 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .readonly {
+            background: rgba(0, 168, 107, 0.1) !important;
+            border-color: var(--accent-secondary) !important;
+            cursor: not-allowed;
+            color: var(--accent-primary) !important;
+            font-weight: 700 !important;
+        }
+        
+        .highlight-input {
+            background: rgba(49, 130, 206, 0.1) !important;
+            border-color: var(--accent-info) !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 15px rgba(49, 130, 206, 0.2) !important;
+        }
+        
+        .result-field {
+            background: rgba(255, 140, 0, 0.15) !important;
+            border-color: var(--accent-warning) !important;
+            font-weight: 800 !important;
+            font-size: 1.2rem !important;
+            color: #d97700 !important;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.2) !important;
+        }
+        
+        .final-result {
+            background: linear-gradient(135deg, rgba(0, 168, 107, 0.2), rgba(0, 204, 106, 0.15)) !important;
+            border: 3px solid var(--accent-primary) !important;
+            color: var(--accent-primary) !important;
+            font-weight: 900 !important;
+            font-size: 1.3rem !important;
+            box-shadow: 0 0 25px rgba(0, 168, 107, 0.3) !important;
+            animation: resultPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes resultPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(0, 168, 107, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(0, 168, 107, 0.5); }
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 168, 107, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 168, 107, 0.4);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(135deg, var(--accent-danger), #c53030);
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
+        }
+        
+        .clear-btn:hover {
+            box-shadow: 0 15px 40px rgba(229, 62, 62, 0.4);
+        }
+        
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            animation: fadeIn 0.4s ease-out;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            padding: 3rem;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: slideInScale 0.4s ease-out;
+        }
+        
+        @keyframes slideInScale {
+            from {
+                transform: translate(-50%, -60%) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent-danger);
+            transform: scale(1.2) rotate(90deg);
+            background: rgba(229, 62, 62, 0.1);
+        }
+        
+        .ppw-price {
+            font-size: 0.85rem;
+            color: #d97700;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 140, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+        
+        .ppw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .ppw-grade-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .ppw-grade-card:hover {
+            background: var(--bg-glass-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 168, 107, 0.15);
+            border-color: var(--accent-primary);
+        }
+        
+        .ppw-grade-title {
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .ppw-grade-price {
+            font-size: 1.2rem;
+            color: #d97700;
+            font-weight: 800;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 2rem;
+            }
+            
+            .nav-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+            }
+            
+            .action-bar {
+                justify-content: center;
+            }
+            
+            .button-row {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+        <span id="themeIcon">🌙</span>
+    </button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>GT Advanced Optimization Suite</h1>
+            <p class="subtitle">Complete Corrugated Pricing & Production Management</p>
+        </div>
+        
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="action-btn secondary" onclick="toggleDebug()">
+                <span>🐛</span> Debug ECT
+            </button>
+            <button class="action-btn warning" onclick="showPpWModal()">
+                <span>💲</span> PpW Pricing
+            </button>
+            <button class="action-btn" onclick="refreshAllCalculations()" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));">
+                <span>🔄</span> Refresh All
+            </button>
+            <button class="action-btn" onclick="showSaveQuoteModal()">
+                <span>💾</span> Save Quote
+            </button>
+            <button class="action-btn" onclick="showLoadQuoteModal()">
+                <span>📂</span> Load Quote
+            </button>
+            <button class="action-btn" onclick="exportToPDF()">
+                <span>📄</span> Export PDF
+            </button>
+            <button class="action-btn secondary" onclick="showDataManagerModal()">
+                <span>🗃️</span> Data Manager
+            </button>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchTab('pricing')">Pricing Calculator</div>
+            <div class="nav-tab" onclick="switchTab('carbon')">Carbon Footprint</div>
+            <div class="nav-tab" onclick="switchTab('leadtime')">Lead Time</div>
+            <div class="nav-tab" onclick="switchTab('analysis')">P&L Analysis</div>
+        </div>
+        
+        <!-- Pricing Calculator Tab -->
+        <div id="pricing-tab" class="tab-content active">
+            <!-- Customer Information -->
+            <div class="section">
+                <div class="section-title">Customer Information</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customer">Customer Name</label>
+                        <input type="text" id="customer" name="customer-name" placeholder="Enter customer name">
+                    </div>
+                    <div class="form-group">
+                        <label for="plant">Plant Location</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <select id="plant" name="plant-location" class="highlight-input" style="flex: 1;">
+                                <option value="Covington">Covington</option>
+                                <option value="Lebanon">Lebanon</option>
+                                <option value="IL / WI">IL / WI</option>
+                                <option value="Dallas">Dallas</option>
+                                <option value="SFS">SFS</option>
+                            </select>
+                            <button onclick="showPlantManagerModal()" style="padding: 0.8rem 1.2rem; font-size: 0.9rem; background: linear-gradient(135deg, #718096, #4a5568);" title="Manage Plants">
+                                <span>⚙️</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="boardType">Board Type</label>
+                        <select id="boardType" name="board-type">
+                            <option value="SingleWall">Single Wall</option>
+                            <option value="DoubleWall">Double Wall</option>
+                            <option value="TripleWall">Triple Wall</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quote Details -->
+            <div class="section">
+                <div class="section-title">📦 Material Specifications (Select First)</div>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary); font-style: italic;">
+                    💡 Select your paper grades first - pricing is calculated based on these materials
+                </p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quoteLiner1">Quote Liner 1</label>
+                        <select id="quoteLiner1">
+                            <optgroup label="Medium">
+                                <option value="20M">20M</option>
+                                <option value="23M">23M</option>
+                                <option value="23UPM">23UPM</option>
+                                <option value="26M">26M</option>
+                                <option value="26UPM">26UPM</option>
+                                <option value="30M">30M</option>
+                                <option value="33M">33M</option>
+                                <option value="36M">36M</option>
+                                <option value="40M">40M</option>
+                                <option value="45M">45M</option>
+                            </optgroup>
+                            <optgroup label="Liner">
+                                <option value="23L">23L</option>
+                                <option value="26L">26L</option>
+                                <option value="30L">30L</option>
+                                <option value="31UPL">31UPL</option>
+                                <option value="33L">33L</option>
+                                <option value="35L">35L</option>
+                                <option value="42L">42L</option>
+                                <option value="45L">45L</option>
+                                <option value="56L">56L</option>
+                                <option value="62L">62L</option>
+                                <option value="69L">69L</option>
+                            </optgroup>
+                            <optgroup label="White Top">
+                                <option value="26MW">26MW</option>
+                                <option value="31MW">31MW</option>
+                                <option value="33MW">33MW</option>
+                                <option value="36MW">36MW</option>
+                                <option value="42MW">42MW</option>
+                                <option value="42WT">42WT</option>
+                                <option value="56MW">56MW</option>
+                                <option value="69MW">69MW</option>
+                            </optgroup>
+                        </select>
+                        <div class="ppw-price" id="liner1Price">PpW: $0.00/ton</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="quoteMedium1">Quote Medium 1</label>
+                        <select id="quoteMedium1">
+                            <option value="20M">20M</option>
+                            <option value="23M">23M</option>
+                            <option value="23UPM">23UPM</option>
+                            <option value="26M">26M</option>
+                            <option value="26UPM">26UPM</option>
+                            <option value="30M">30M</option>
+                            <option value="33M">33M</option>
+                            <option value="36M">36M</option>
+                            <option value="40M">40M</option>
+                            <option value="45M">45M</option>
+                        </select>
+                        <div class="ppw-price" id="medium1Price">PpW: $0.00/ton</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quoteSinglewall">Quote (Flute)</label>
+                        <select id="quoteSinglewall">
+                            <option value="C">C</option>
+                            <option value="B">B</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quoteLiner2">Quote Liner 2</label>
+                        <select id="quoteLiner2">
+                            <optgroup label="Medium">
+                                <option value="20M">20M</option>
+                                <option value="23M">23M</option>
+                                <option value="23UPM">23UPM</option>
+                                <option value="26M">26M</option>
+                                <option value="26UPM">26UPM</option>
+                                <option value="30M">30M</option>
+                                <option value="33M">33M</option>
+                                <option value="36M">36M</option>
+                                <option value="40M">40M</option>
+                                <option value="45M">45M</option>
+                            </optgroup>
+                            <optgroup label="Liner">
+                                <option value="23L">23L</option>
+                                <option value="26L">26L</option>
+                                <option value="30L">30L</option>
+                                <option value="31UPL">31UPL</option>
+                                <option value="33L">33L</option>
+                                <option value="35L">35L</option>
+                                <option value="42L">42L</option>
+                                <option value="45L">45L</option>
+                                <option value="56L">56L</option>
+                                <option value="62L">62L</option>
+                                <option value="69L">69L</option>
+                            </optgroup>
+                            <optgroup label="White Top">
+                                <option value="26MW">26MW</option>
+                                <option value="31MW">31MW</option>
+                                <option value="33MW">33MW</option>
+                                <option value="36MW">36MW</option>
+                                <option value="42MW">42MW</option>
+                                <option value="42WT">42WT</option>
+                                <option value="56MW">56MW</option>
+                                <option value="69MW">69MW</option>
+                            </optgroup>
+                        </select>
+                        <div class="ppw-price" id="liner2Price">PpW: $0.00/ton</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quotedCombo">Quoted Combo</label>
+                        <input type="text" id="quotedCombo" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="ectSheet">ECT Sheet (Calculated)</label>
+                        <input type="text" id="ectSheet" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="boxCompression">Box Compression (Calculated)</label>
+                        <input type="text" id="boxCompression" class="readonly" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Details -->
+            <div class="section">
+                <div class="section-title">Item Specifications</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemNumber">Item Number</label>
+                        <input type="text" id="itemNumber" name="item-number" placeholder="Enter item number">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="item-description" placeholder="Item description">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="length">Length (inches)</label>
+                        <input type="number" id="length" name="box-length" step="0.001" placeholder="12.000">
+                    </div>
+                    <div class="form-group">
+                        <label for="width">Width (inches)</label>
+                        <input type="number" id="width" name="box-width" step="0.001" placeholder="12.000">
+                    </div>
+                    <div class="form-group">
+                        <label for="depth">Depth (inches)</label>
+                        <input type="number" id="depth" name="box-depth" step="0.001" placeholder="12.000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="blankWidth">Blank Width</label>
+                        <input type="text" id="blankWidth" name="blank-width" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="blankLength">Blank Length</label>
+                        <input type="text" id="blankLength" name="blank-length" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="sqftPerBlank">Sq. Ft. per Blank</label>
+                        <input type="text" id="sqftPerBlank" name="sqft-per-blank" class="readonly" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" name="order-quantity" class="highlight-input" placeholder="5000">
+                        <div id="sqftIndicator" style="font-size: 0.85rem; margin-top: 0.5rem; padding: 0.5rem; background: rgba(49, 130, 206, 0.1); border-radius: 8px; text-align: center;">
+                            Total Sq Ft: <span id="currentSqFt">0</span> / Min: <span id="minSqFtDisplay">5,000</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantityMSF">Quantity MSF / TL</label>
+                        <input type="text" id="quantityMSF" name="quantity-msf" class="readonly" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Configuration -->
+            <div class="section">
+                <div class="section-title">Pricing Configuration</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pricingMode">Pricing Mode</label>
+                        <select id="pricingMode" name="pricing-mode" class="highlight-input" onchange="switchPricingMode()">
+                            <option value="sellingPrice">Enter Selling Price $/MSF</option>
+                            <option value="marginalContribution">Enter Target Marginal Contribution $/MSF</option>
+                            <option value="grossMargin">Enter Target Gross Margin $/MSF</option>
+                            <option value="marginalContributionTon">Enter Target Marginal Contribution $/Ton</option>
+                            <option value="grossMarginTon">Enter Target Gross Margin $/Ton</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="primaryInputLabel" for="primaryPricingInput">Selling Price $/MSF</label>
+                        <input type="number" id="primaryPricingInput" name="primary-pricing-input" step="0.01" class="highlight-input" placeholder="60.00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Calculated Results</label>
+                        <div id="reversePricingResults" style="background: rgba(0, 168, 107, 0.1); padding: 1rem; border-radius: 10px; font-family: monospace; font-size: 0.9rem; color: var(--accent-primary); border: 1px solid rgba(0, 168, 107, 0.2);">
+                            Results will appear here when you enter a target value
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sellingPriceMSF">Calculated Selling Price $/MSF</label>
+                        <input type="text" id="sellingPriceMSF" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="sellPriceM">Sell Price $/M boxes (Calculated)</label>
+                        <input type="text" id="sellPriceM" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="sellingPriceTon">Selling Price $/ton (Calculated)</label>
+                        <input type="text" id="sellingPriceTon" class="readonly" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Analysis -->
+            <div class="section">
+                <div class="section-title">Cost Analysis</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quotedBasis">Quoted Basis lbs/MSF</label>
+                        <input type="text" id="quotedBasis" class="readonly" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paperCostMSF">Paper Cost $/MSF</label>
+                        <input type="text" id="paperCostMSF" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="paperCostTon">Paper Cost $/ton</label>
+                        <input type="text" id="paperCostTon" class="readonly" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="wasteReturns">Waste & Returns %</label>
+                        <input type="number" id="wasteReturns" step="0.01" value="10.25">
+                    </div>
+                    <div class="form-group">
+                        <label for="freightTL">Freight / TL</label>
+                        <input type="number" id="freightTL" step="0.01" value="400">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="freightMSF">Freight $/MSF</label>
+                        <input type="text" id="freightMSF" class="readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="freightTon">Freight $/ton</label>
+                        <input type="text" id="freightTon" class="readonly" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="otherVar">Other Variable as % of paper</label>
+                        <input type="number" id="otherVar" step="0.01" value="23.50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="section">
+                <div class="section-title">Financial Results</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marginalContMSF">Marginal Contribution $/MSF</label>
+                        <input type="text" id="marginalContMSF" class="result-field" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="marginalContTon">Marginal Contribution $/ton</label>
+                        <input type="text" id="marginalContTon" class="result-field" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fixedCosts">Fixed Costs as % of paper</label>
+                        <input type="number" id="fixedCosts" step="0.01" value="26.44">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="grossMarginMSF">Gross Margin $/MSF</label>
+                        <input type="text" id="grossMarginMSF" class="final-result" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="grossMarginTon">Gross Margin $/ton</label>
+                        <input type="text" id="grossMarginTon" class="final-result" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button class="calculate-btn" onclick="calculatePricing()">Calculate / Update Pricing</button>
+                <button onclick="refreshAllCalculations()" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));">
+                    🔄 Refresh All Calculations
+                </button>
+                <button class="clear-btn" onclick="clearForm()">Clear Form</button>
+            </div>
+        </div>
+        
+        <!-- Other tabs content placeholders -->
+        <div id="carbon-tab" class="tab-content">
+            <div class="section">
+                <div class="section-title">Carbon Footprint Calculator</div>
+                <p style="text-align: center; padding: 4rem; color: var(--text-secondary); font-size: 1.2rem;">
+                    🌍 Carbon footprint analysis feature coming soon!
+                </p>
+            </div>
+        </div>
+        
+        <div id="leadtime-tab" class="tab-content">
+            <div class="section">
+                <div class="section-title">Lead Time Estimator</div>
+                <p style="text-align: center; padding: 4rem; color: var(--text-secondary); font-size: 1.2rem;">
+                    ⏱️ Lead time analysis feature coming soon!
+                </p>
+            </div>
+        </div>
+        
+        <div id="analysis-tab" class="tab-content">
+            <div class="section">
+                <div class="section-title">P&L Analysis</div>
+                <p style="text-align: center; padding: 4rem; color: var(--text-secondary); font-size: 1.2rem;">
+                    📊 P&L analysis feature coming soon!
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PpW Pricing Modal -->
+    <div id="ppwModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">💲 Paper Price per Weight (PpW) Management</h2>
+                <button class="close-modal" onclick="closePpWModal()">&times;</button>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quick Actions</label>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="showAllPaperPrices()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Show All Prices</button>
+                        <button onclick="loadSamplePricing()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Load Sample Pricing</button>
+                        <button onclick="exportPricingCSV()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Export CSV</button>
+                        <button onclick="changePassword()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem; background: linear-gradient(135deg, var(--accent-warning), #e07600);">Change Password</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Base Reference Prices</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <label for="ppwBase42L" style="font-size: 0.9rem;">42L Base ($/Ton)</label>
+                            <input type="number" id="ppwBase42L" step="1" value="905">
+                        </div>
+                        <div>
+                            <label for="ppwBase26M" style="font-size: 0.9rem;">26M Base ($/Ton)</label>
+                            <input type="number" id="ppwBase26M" step="1" value="795">
+                        </div>
+                        <div>
+                            <label for="ppwBase42WT" style="font-size: 0.9rem;">42WT Base ($/Ton)</label>
+                            <input type="number" id="ppwBase42WT" step="1" value="1185">
+                        </div>
+                        <div>
+                            <label for="ppwMarketAdj" style="font-size: 0.9rem;">Market Adj ($/Ton)</label>
+                            <input type="number" id="ppwMarketAdj" step="1" value="0">
+                        </div>
+                    </div>
+                    <button onclick="updateBasePrices()" style="margin-top: 1rem;">Update Base Prices</button>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Order Requirements</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div>
+                            <label for="minimumSqFt" style="font-size: 0.9rem;">Minimum Order (Sq Ft)</label>
+                            <input type="number" id="minimumSqFt" step="100" value="5000" min="0">
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button onclick="updateMinimumOrder()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Update Minimum</button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                        This sets the minimum square footage required for all quotes. Orders below this amount cannot be calculated.
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ppwPriceGrid" class="ppw-grid">
+                <!-- Price grid will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🔒 Password Required</h2>
+                <button class="close-modal" onclick="closePasswordModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="passwordInput">Enter Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password" 
+                       onkeypress="if(event.key==='Enter') checkPassword()">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="closePasswordModal()" class="action-btn secondary" style="padding: 0.8rem 1.5rem;">Cancel</button>
+                <button onclick="checkPassword()">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Save Quote Modal -->
+    <div id="saveQuoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Save Quote</h2>
+                <button class="close-modal" onclick="closeSaveQuoteModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="quoteName">Quote Name</label>
+                <input type="text" id="quoteName" placeholder="Enter quote name">
+            </div>
+            <div class="form-group">
+                <label for="quoteNotes">Notes</label>
+                <textarea id="quoteNotes" rows="3" style="width: 100%; padding: 0.75rem; border-radius: 15px; border: 2px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);"></textarea>
+            </div>
+            <button onclick="saveQuote()">Save Quote</button>
+        </div>
+    </div>
+    
+    <!-- Load Quote Modal -->
+    <div id="loadQuoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Load Quote</h2>
+                <button class="close-modal" onclick="closeLoadQuoteModal()">&times;</button>
+            </div>
+            <div id="quoteList" style="display: grid; gap: 1rem;">
+                <!-- Quotes will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Manager Modal -->
+    <div id="dataManagerModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🗃️ Data Manager</h2>
+                <button class="close-modal" onclick="closeDataManagerModal()">&times;</button>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data Management</label>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="exportAllData()" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Export All Data</button>
+                        <button onclick="clearAllData()" class="clear-btn" style="font-size: 0.9rem; padding: 0.8rem 1.5rem;">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plant Manager Modal -->
+    <div id="plantManagerModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🏭 Plant Location Manager</h2>
+                <button class="close-modal" onclick="closePlantManagerModal()">&times;</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Add New Plant</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newPlantName">Plant Name</label>
+                        <input type="text" id="newPlantName" placeholder="e.g., Chicago, Phoenix">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPlantCode">Plant Code (Optional)</label>
+                        <input type="text" id="newPlantCode" placeholder="e.g., CHI, PHX">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPlantSolar">Renewable Energy %</label>
+                        <input type="number" id="newPlantSolar" min="0" max="100" value="10" placeholder="10">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div style="font-weight: 700; margin-bottom: 0.8rem;">Flute Multipliers (Optional - leave blank for defaults)</div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                            <div>
+                                <label for="newPlantFluteC" style="font-size: 0.85rem; font-weight: normal;">C Flute</label>
+                                <input type="number" id="newPlantFluteC" step="0.001" placeholder="1.43">
+                            </div>
+                            <div>
+                                <label for="newPlantFluteB" style="font-size: 0.85rem; font-weight: normal;">B Flute</label>
+                                <input type="number" id="newPlantFluteB" step="0.001" placeholder="1.32">
+                            </div>
+                            <div>
+                                <label for="newPlantFluteE" style="font-size: 0.85rem; font-weight: normal;">E Flute</label>
+                                <input type="number" id="newPlantFluteE" step="0.001" placeholder="1.27">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addNewPlant()">Add Plant</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Existing Plants</div>
+                <div id="plantList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Plant list will be populated here -->
+                </div>
+            </div>
+            
+            <div class="button-row">
+                <button onclick="resetToDefaultPlants()" class="clear-btn">Reset to Defaults</button>
+                <button onclick="exportPlantData()" class="action-btn secondary">Export Plants</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== EXCEL-COMPATIBLE PPW PRICING SYSTEM =====
+        const CONFIG = {
+            // Base prices
+            basePrices: {
+                '42L': 905,    
+                '26M': 795,    
+                '42WT': 1185   
+            },
+            
+            // Market adjustment
+            marketAdjustment: 0,
+            
+            // Minimum order requirements
+            minimumSqFt: 5000,
+            
+            // Password protection
+            ppwPassword: 'admin123', // Change this to your desired password
+            
+            // Grade pricing deltas (Excel formulas)
+            gradePricingDeltas: {
+                // Medium grades
+                '20M': { base: '26M', delta: 30 },
+                '23M': { base: '26M', delta: 10 },
+                '23UPM': { base: '23M', delta: 100 },
+                '26M': { base: '26M', delta: -90 },
+                '26UPM': { base: '26M', delta: 100 },
+                '30M': { base: '26M', delta: 0 },
+                '33M': { base: '26M', delta: 0 },
+                '36M': { base: '26M', delta: 0 },
+                '40M': { base: '26M', delta: 0 },
+                '45M': { base: '26M', delta: 0 },
+                
+                // Liner grades
+                '23L': { base: 'D24', delta: 50 },
+                '26L': { base: 'D24', delta: 40 },
+                '30L': { base: 'D24', delta: 30 },
+                '31UPL': { base: 'D24', delta: 30 },
+                '33L': { base: 'D24', delta: 30 },
+                '35L': { base: 'D24', delta: 15 },
+                '42L': { base: '42L', delta: -115 },
+                '45L': { base: 'D24', delta: 15 },
+                '56L': { base: 'D24', delta: 20 },
+                '62L': { base: 'D24', delta: 10 },
+                '69L': { base: 'D24', delta: 0 },
+                
+                // White Top grades
+                '26MW': { base: '42WT', delta: 100 },
+                '31MW': { base: '42WT', delta: 60 },
+                '33MW': { base: '42WT', delta: 40 },
+                '36MW': { base: '42WT', delta: 30 },
+                '42MW': { base: '42WT', delta: 5 },
+                '42WT': { base: '42WT', delta: 0 },
+                '56MW': { base: '42WT', delta: 0 },
+                '69MW': { base: '42WT', delta: 0 }
+            }
+        };
+
+        const stifiValues = {
+            '20M': 9.6, '23M': 11.0, '23UPM': 16.5, '26M': 12.0, '26UPM': 18.0,
+            '30M': 14.5, '33M': 17.0, '36M': 20.0, '40M': 22.0, '45M': 24.0,
+            '23L': 12.5, '26L': 14.0, '30L': 16.5, '31UPL': 19.5, '33L': 17.5,
+            '35L': 20.0, '42L': 23.0, '45L': 25.0, '56L': 29.0, '62L': 33.0, '69L': 35.7,
+            '26MW': 11.8, '31MW': 12.9, '33MW': 14.6, '36MW': 20.0, '42MW': 20.0,
+            '42WT': 20.0, '56MW': 28.4, '69MW': 28.4
+        };
+
+        const fluteMultipliers = {
+            'C': {
+                'Covington': 1.43, 'Lebanon': 1.43, 'IL / WI': 1.43,
+                'Dallas': 1.409, 'SFS': 1.409
+            },
+            'B': {
+                'Covington': 1.32, 'Lebanon': 1.32, 'IL / WI': 1.32,
+                'Dallas': 1.302, 'SFS': 1.32
+            },
+            'E': {
+                'Covington': 1.27, 'Lebanon': 1.27, 'IL / WI': 1.27,
+                'Dallas': 1.224, 'SFS': 1.29
+            }
+        };
+
+        let debugMode = false;
+        let savedQuotes = [];
+        let storageAvailable = false;
+        let memoryStorage = {};
+
+        function checkStorageAvailability() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                storageAvailable = true;
+                return true;
+            } catch (error) {
+                console.warn('localStorage not available, using memory storage. Data will not persist between sessions.');
+                storageAvailable = false;
+                return false;
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    savedQuotes: savedQuotes,
+                    ppwConfig: CONFIG,
+                    timestamp: new Date().toISOString(),
+                    version: '2.0'
+                };
+                
+                if (storageAvailable) {
+                    localStorage.setItem('gtOptimizationSuite', JSON.stringify(data));
+                } else {
+                    memoryStorage = data;
+                }
+            } catch (error) {
+                console.warn('Could not save data:', error);
+                memoryStorage = {
+                    savedQuotes: savedQuotes,
+                    ppwConfig: CONFIG,
+                    timestamp: new Date().toISOString(),
+                    version: '2.0'
+                };
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                let saved = null;
+                
+                if (storageAvailable) {
+                    saved = localStorage.getItem('gtOptimizationSuite');
+                    if (saved) {
+                        saved = JSON.parse(saved);
+                    }
+                } else {
+                    saved = memoryStorage.timestamp ? memoryStorage : null;
+                }
+                
+                if (saved) {
+                    if (saved.savedQuotes) savedQuotes = saved.savedQuotes;
+                    if (saved.ppwConfig) {
+                        Object.assign(CONFIG, saved.ppwConfig);
+                        // Ensure minimumSqFt is set
+                        if (!CONFIG.minimumSqFt) {
+                            CONFIG.minimumSqFt = 5000;
+                        }
+                        // Ensure password is set
+                        if (!CONFIG.ppwPassword) {
+                            CONFIG.ppwPassword = 'admin123';
+                        }
+                    }
+                    
+                    updatePpWFormFields();
+                    
+                    const loadedDate = new Date(saved.timestamp).toLocaleDateString();
+                    const storageType = storageAvailable ? 'localStorage' : 'memory';
+                    showNotification(`Data restored from ${storageType} (${loadedDate})`, 'success');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('Could not load data:', error);
+            }
+            return false;
+        }
+
+        function updatePpWFormFields() {
+            if (document.getElementById('ppwBase42L')) {
+                document.getElementById('ppwBase42L').value = CONFIG.basePrices['42L'];
+                document.getElementById('ppwBase26M').value = CONFIG.basePrices['26M'];
+                document.getElementById('ppwBase42WT').value = CONFIG.basePrices['42WT'];
+                document.getElementById('ppwMarketAdj').value = CONFIG.marketAdjustment;
+            }
+            if (document.getElementById('minimumSqFt')) {
+                document.getElementById('minimumSqFt').value = CONFIG.minimumSqFt;
+            }
+        }
+
+        function exportAllData() {
+            const data = {
+                savedQuotes: savedQuotes,
+                ppwConfig: CONFIG,
+                exportDate: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `GT_Suite_Complete_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Complete data backup exported!', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will permanently delete ALL saved data including quotes and pricing. Are you sure?')) {
+                try {
+                    if (storageAvailable) {
+                        localStorage.removeItem('gtOptimizationSuite');
+                    }
+                } catch (error) {
+                    console.warn('Could not clear localStorage:', error);
+                }
+                
+                memoryStorage = {};
+                savedQuotes = [];
+                CONFIG.basePrices = { '42L': 905, '26M': 795, '42WT': 1185 };
+                CONFIG.marketAdjustment = 0;
+                CONFIG.minimumSqFt = 5000;
+                CONFIG.ppwPassword = 'admin123';
+                
+                updatePaperPricesDisplay();
+                updatePpWFormFields();
+                
+                const storageType = storageAvailable ? 'localStorage' : 'memory';
+                showNotification(`All data cleared from ${storageType}! Application reset to defaults.`, 'warning');
+            }
+        }
+
+        function getPaperCost(grade) {
+            const priceInfo = CONFIG.gradePricingDeltas[grade];
+            if (!priceInfo) return 715;
+            
+            let basePrice;
+            if (priceInfo.base === 'D24') {
+                basePrice = CONFIG.basePrices['42L'] - 115 - CONFIG.marketAdjustment;
+            } else if (priceInfo.base === '23M') {
+                basePrice = CONFIG.basePrices['26M'] + 10;
+            } else {
+                basePrice = CONFIG.basePrices[priceInfo.base] || 795;
+            }
+            
+            let finalPrice = basePrice + priceInfo.delta;
+            
+            if (grade === '26M' || grade === '42L') {
+                finalPrice -= CONFIG.marketAdjustment;
+            }
+            
+            if (grade === '23M') {
+                return 715;
+            }
+            
+            return finalPrice;
+        }
+
+        function updatePaperPricesDisplay() {
+            const liner1 = document.getElementById('quoteLiner1').value;
+            const medium1 = document.getElementById('quoteMedium1').value;
+            const liner2 = document.getElementById('quoteLiner2').value;
+            
+            const liner1Price = getPaperCost(liner1);
+            const medium1Price = getPaperCost(medium1);
+            const liner2Price = getPaperCost(liner2);
+            
+            const liner1PriceEl = document.getElementById('liner1Price');
+            const medium1PriceEl = document.getElementById('medium1Price');
+            const liner2PriceEl = document.getElementById('liner2Price');
+            
+            if (liner1PriceEl) liner1PriceEl.textContent = `PpW: ${liner1Price.toFixed(0)}/ton`;
+            if (medium1PriceEl) medium1PriceEl.textContent = `PpW: ${medium1Price.toFixed(0)}/ton`;
+            if (liner2PriceEl) liner2PriceEl.textContent = `PpW: ${liner2Price.toFixed(0)}/ton`;
+        }
+
+        function updateBlankDimensions() {
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const depth = parseFloat(document.getElementById('depth').value) || 0;
+            
+            const blankWidth = width + depth + 0.5;
+            const blankLength = (2 * width) + (2 * length) + 2;
+            const sqft = (blankWidth * blankLength) / 144;
+            
+            document.getElementById('blankWidth').value = blankWidth.toFixed(4);
+            document.getElementById('blankLength').value = blankLength.toFixed(1);
+            document.getElementById('sqftPerBlank').value = sqft.toFixed(3);
+            
+            updateQuantityMSF();
+        }
+
+        function updateQuantityMSF() {
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const sqft = parseFloat(document.getElementById('sqftPerBlank').value) || 0;
+            const msf = (quantity * sqft) / 1000;
+            const totalSqFt = quantity * sqft;
+            
+            document.getElementById('quantityMSF').value = msf.toFixed(3);
+            
+            // Update square feet indicator
+            if (document.getElementById('currentSqFt')) {
+                document.getElementById('currentSqFt').textContent = totalSqFt.toFixed(0).toLocaleString();
+                document.getElementById('minSqFtDisplay').textContent = CONFIG.minimumSqFt.toLocaleString();
+                
+                // Update indicator color based on whether minimum is met
+                const indicator = document.getElementById('sqftIndicator');
+                if (totalSqFt >= CONFIG.minimumSqFt) {
+                    indicator.style.background = 'rgba(0, 168, 107, 0.1)';
+                    indicator.style.color = 'var(--accent-primary)';
+                    indicator.style.borderColor = 'rgba(0, 168, 107, 0.2)';
+                } else if (totalSqFt > 0) {
+                    indicator.style.background = 'rgba(255, 140, 0, 0.1)';
+                    indicator.style.color = '#d97700';
+                    indicator.style.borderColor = 'rgba(255, 140, 0, 0.2)';
+                } else {
+                    indicator.style.background = 'rgba(49, 130, 206, 0.1)';
+                    indicator.style.color = 'var(--text-primary)';
+                    indicator.style.borderColor = 'rgba(49, 130, 206, 0.2)';
+                }
+            }
+        }
+
+        function updateQuotedCombo() {
+            const liner1 = document.getElementById('quoteLiner1').value;
+            const medium1 = document.getElementById('quoteMedium1').value;
+            const liner2 = document.getElementById('quoteLiner2').value;
+            
+            document.getElementById('quotedCombo').value = `${liner1}/${medium1}/${liner2}`;
+        }
+
+        function calculateECTandBoxCompression() {
+            try {
+                const liner1 = document.getElementById('quoteLiner1').value;
+                const medium1 = document.getElementById('quoteMedium1').value;
+                const liner2 = document.getElementById('quoteLiner2').value;
+                const plant = document.getElementById('plant').value;
+                const flute = document.getElementById('quoteSinglewall').value;
+                
+                const stifiLiner1 = stifiValues[liner1];
+                const stifiMedium1 = stifiValues[medium1];
+                const stifiLiner2 = stifiValues[liner2];
+                const fluteMultiplier = fluteMultipliers[flute]?.[plant];
+                
+                if (stifiLiner1 === undefined || stifiMedium1 === undefined || stifiLiner2 === undefined || fluteMultiplier === undefined) {
+                    return;
+                }
+                
+                const adjustedMedium1 = stifiMedium1 * fluteMultiplier;
+                const totalStifi = stifiLiner1 + adjustedMedium1 + stifiLiner2;
+                const ectSheet = 0.6982 * totalStifi * 0.9;
+                const boxCompression = ectSheet * 0.92;
+                
+                document.getElementById('ectSheet').value = ectSheet.toFixed(1);
+                document.getElementById('boxCompression').value = boxCompression.toFixed(1);
+                
+            } catch (error) {
+                console.error('Error in ECT calculation:', error);
+            }
+        }
+
+        function switchPricingMode() {
+            const mode = document.getElementById('pricingMode').value;
+            const label = document.getElementById('primaryInputLabel');
+            const input = document.getElementById('primaryPricingInput');
+            const resultsDiv = document.getElementById('reversePricingResults');
+            
+            input.value = '';
+            resultsDiv.innerHTML = 'Results will appear here when you enter a target value';
+            
+            switch(mode) {
+                case 'sellingPrice':
+                    label.textContent = 'Selling Price $/MSF';
+                    input.placeholder = '60.00';
+                    break;
+                case 'marginalContribution':
+                    label.textContent = 'Target Marginal Contribution $/MSF';
+                    input.placeholder = '12.87';
+                    break;
+                case 'grossMargin':
+                    label.textContent = 'Target Gross Margin $/MSF';
+                    input.placeholder = '5.42';
+                    break;
+                case 'marginalContributionTon':
+                    label.textContent = 'Target Marginal Contribution $/Ton';
+                    input.placeholder = '326.34';
+                    break;
+                case 'grossMarginTon':
+                    label.textContent = 'Target Gross Margin $/Ton';
+                    input.placeholder = '137.29';
+                    break;
+            }
+        }
+
+        function getGradeBasisWeight(grade) {
+            const match = grade.match(/\d+/);
+            return match ? parseInt(match[0]) : 23;
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function calculatePricing() {
+            // Validate inputs first
+            const errors = validateInputs();
+            if (errors.length > 0) {
+                showNotification(errors.join('\n'), 'error');
+                return;
+            }
+
+            const sellingPriceMSF = parseFloat(document.getElementById('primaryPricingInput').value) || 0;
+            if (sellingPriceMSF === 0) {
+                showNotification('Please enter a selling price', 'warning');
+                return;
+            }
+            
+            // Check minimum square feet requirement
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const sqftPerBlank = parseFloat(document.getElementById('sqftPerBlank').value) || 0;
+            const totalSqFt = quantity * sqftPerBlank;
+            
+            if (totalSqFt < CONFIG.minimumSqFt) {
+                showNotification(`Order does not meet minimum requirement of ${CONFIG.minimumSqFt.toLocaleString()} sq ft. Current: ${totalSqFt.toFixed(0)} sq ft`, 'error');
+                // Clear result fields
+                document.querySelectorAll('.result-field, .final-result').forEach(field => field.value = '');
+                return;
+            }
+            
+            try {
+                const plant = document.getElementById('plant').value;
+                const sqftPerBlank = parseFloat(document.getElementById('sqftPerBlank').value) || 0;
+                
+                const liner1 = document.getElementById('quoteLiner1').value;
+                const medium1 = document.getElementById('quoteMedium1').value;
+                const liner2 = document.getElementById('quoteLiner2').value;
+                const flute = document.getElementById('quoteSinglewall').value;
+                
+                const d20 = getGradeBasisWeight(liner1);
+                const d21 = getGradeBasisWeight(medium1);
+                const d22 = fluteMultipliers[flute][plant] || 1;
+                const d23 = getGradeBasisWeight(liner2);
+                
+                const actualBasisWeight = d20 + (d21 * d22) + d23;
+                document.getElementById('quotedBasis').value = actualBasisWeight.toFixed(2);
+                
+                document.getElementById('sellingPriceMSF').value = sellingPriceMSF.toFixed(2);
+                
+                const sellPriceM = sellingPriceMSF * sqftPerBlank;
+                document.getElementById('sellPriceM').value = sellPriceM.toFixed(2);
+                
+                const sellingPriceTon = actualBasisWeight > 0 ? (sellingPriceMSF * 2000) / actualBasisWeight : 0;
+                document.getElementById('sellingPriceTon').value = sellingPriceTon.toFixed(2);
+                
+                const liner1Cost = getPaperCost(liner1);
+                const medium1Cost = getPaperCost(medium1);
+                const liner2Cost = getPaperCost(liner2);
+                
+                const e20 = (liner1Cost * d20) / 2000;
+                const e21 = (medium1Cost * d21) / 2000;
+                const e22 = d22;
+                const e23 = (liner2Cost * d23) / 2000;
+                
+                const paperCostMSF = e20 + (e21 * e22) + e23;
+                document.getElementById('paperCostMSF').value = paperCostMSF.toFixed(2);
+                
+                const paperCostTon = (paperCostMSF * 2000) / actualBasisWeight;
+                document.getElementById('paperCostTon').value = paperCostTon.toFixed(2);
+                
+                const freightTL = parseFloat(document.getElementById('freightTL').value) || 400;
+                const quantityMSFTL = parseFloat(document.getElementById('quantityMSF').value) || 0;
+                const freightMSF = quantityMSFTL > 0 ? freightTL / quantityMSFTL : 0;
+                document.getElementById('freightMSF').value = freightMSF.toFixed(2);
+                
+                const freightTon = actualBasisWeight > 0 ? (freightMSF * 2000) / actualBasisWeight : 0;
+                document.getElementById('freightTon').value = freightTon.toFixed(2);
+                
+                const wasteReturns = parseFloat(document.getElementById('wasteReturns').value) / 100 || 0;
+                const otherVar = parseFloat(document.getElementById('otherVar').value) / 100 || 0;
+                const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) / 100 || 0;
+                
+                const totalVarCostMSF = (paperCostMSF * (1 + wasteReturns)) + 
+                                    freightMSF + 
+                                    (paperCostMSF * otherVar);
+                
+                const marginalContMSF = sellingPriceMSF - totalVarCostMSF;
+                document.getElementById('marginalContMSF').value = marginalContMSF.toFixed(2);
+                
+                const marginalContTon = actualBasisWeight > 0 ? (marginalContMSF * 2000) / actualBasisWeight : 0;
+                document.getElementById('marginalContTon').value = marginalContTon.toFixed(2);
+                
+                const fixedCostsMSF = paperCostMSF * fixedCosts;
+                const grossMarginMSF = marginalContMSF - fixedCostsMSF;
+                document.getElementById('grossMarginMSF').value = grossMarginMSF.toFixed(2);
+                
+                const grossMarginTon = actualBasisWeight > 0 ? (grossMarginMSF * 2000) / actualBasisWeight : 0;
+                document.getElementById('grossMarginTon').value = grossMarginTon.toFixed(2);
+                
+                saveToLocalStorage();
+                
+            } catch (error) {
+                console.error('Calculation error:', error);
+                showNotification('Error in calculation. Please check your inputs.', 'error');
+            }
+        }
+
+        function validateInputs() {
+            const errors = [];
+            
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const depth = parseFloat(document.getElementById('depth').value) || 0;
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const sqftPerBlank = parseFloat(document.getElementById('sqftPerBlank').value) || 0;
+            
+            // Only validate dimensions if they're entered
+            if (length > 0 && (length > 100 || length < 1)) errors.push('Length must be between 1 and 100 inches');
+            if (width > 0 && (width > 100 || width < 1)) errors.push('Width must be between 1 and 100 inches');
+            if (depth > 0 && (depth > 100 || depth < 1)) errors.push('Depth must be between 1 and 100 inches');
+            
+            // Calculate total square feet
+            const totalSqFt = (quantity * sqftPerBlank);
+            
+            // Only check minimum if all required fields are filled
+            if (length > 0 && width > 0 && depth > 0 && quantity > 0) {
+                if (totalSqFt < CONFIG.minimumSqFt) {
+                    errors.push(`Minimum order is ${CONFIG.minimumSqFt.toLocaleString()} square feet. Current order: ${totalSqFt.toFixed(0)} sq ft`);
+                }
+            }
+            
+            return errors;
+        }
+
+        function loadExampleData() {
+            document.getElementById('customer').value = 'Sample Customer';
+            document.getElementById('plant').value = 'Lebanon';
+            document.getElementById('boardType').value = 'SingleWall';
+            document.getElementById('itemNumber').value = '6';
+            document.getElementById('description').value = 'Sample Item';
+            document.getElementById('length').value = '12';
+            document.getElementById('width').value = '12';
+            document.getElementById('depth').value = '12';
+            document.getElementById('quantity').value = '5000';
+            
+            document.getElementById('pricingMode').value = 'sellingPrice';
+            document.getElementById('primaryPricingInput').value = '60.00';
+            switchPricingMode();
+            
+            document.getElementById('quoteLiner1').value = '23M';
+            document.getElementById('quoteMedium1').value = '23M';
+            document.getElementById('quoteLiner2').value = '23M';
+            document.getElementById('quoteSinglewall').value = 'C';
+            
+            updateBlankDimensions();
+            updateQuotedCombo();
+            calculateECTandBoxCompression();
+            updatePaperPricesDisplay();
+            calculatePricing();
+            
+            showNotification('Example data loaded successfully!', 'success');
+        }
+
+        function refreshAllCalculations() {
+            // Show notification that refresh is starting
+            showNotification('🔄 Refreshing all calculations...', 'info');
+            
+            // Update all intermediate calculations
+            updateBlankDimensions();
+            updateQuantityMSF();
+            updateQuotedCombo();
+            calculateECTandBoxCompression();
+            updatePaperPricesDisplay();
+            
+            // Only run pricing calculation if we have valid inputs
+            const sellingPrice = parseFloat(document.getElementById('primaryPricingInput').value) || 0;
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const depth = parseFloat(document.getElementById('depth').value) || 0;
+            
+            if (sellingPrice > 0 && quantity > 0 && length > 0 && width > 0 && depth > 0) {
+                calculatePricing();
+                showNotification('✅ All calculations refreshed!', 'success');
+            } else {
+                showNotification('✅ Display values refreshed! Enter all required fields to calculate pricing.', 'success');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('customer').value = '';
+            document.getElementById('itemNumber').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('length').value = '';
+            document.getElementById('width').value = '';
+            document.getElementById('depth').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('primaryPricingInput').value = '';
+            document.getElementById('reversePricingResults').innerHTML = 'Results will appear here when you enter a target value';
+            
+            document.getElementById('pricingMode').value = 'sellingPrice';
+            switchPricingMode();
+            
+            document.querySelectorAll('.readonly').forEach(field => field.value = '');
+            document.querySelectorAll('.result-field, .final-result').forEach(field => field.value = '');
+            
+            updateBlankDimensions();
+            updateQuotedCombo();
+            updatePaperPricesDisplay();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            showNotification(`Debug mode ${debugMode ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        // PpW Modal Functions
+        function showPpWModal() {
+            document.getElementById('passwordModal').style.display = 'block';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        }
+        
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+        
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === CONFIG.ppwPassword) {
+                closePasswordModal();
+                updatePpWPriceGrid();
+                document.getElementById('ppwModal').style.display = 'block';
+            } else {
+                showNotification('Incorrect password. Access denied.', 'error');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function closePpWModal() {
+            document.getElementById('ppwModal').style.display = 'none';
+        }
+
+        function updatePpWPriceGrid() {
+            const grid = document.getElementById('ppwPriceGrid');
+            grid.innerHTML = '';
+            
+            const allGrades = Object.keys(CONFIG.gradePricingDeltas);
+            allGrades.forEach(grade => {
+                const price = getPaperCost(grade);
+                const stifi = stifiValues[grade] || 'N/A';
+                
+                const card = document.createElement('div');
+                card.className = 'ppw-grade-card';
+                card.innerHTML = `
+                    <div class="ppw-grade-title">${grade}</div>
+                    <div class="ppw-grade-price">${price.toFixed(0)}/ton</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        STIFI: ${stifi}
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function showAllPaperPrices() {
+            if (typeof console !== 'undefined' && console.log) {
+                console.log('💲 =============== ALL PAPER PRICES (PpW) ===============');
+                console.log('Base References:');
+                console.log(`42L base:  ${CONFIG.basePrices['42L']}/ton`);
+                console.log(`26M base:  ${CONFIG.basePrices['26M']}/ton`);
+                console.log(`42WT base: ${CONFIG.basePrices['42WT']}/ton`);
+                console.log(`Market Adj: ${CONFIG.marketAdjustment}/ton`);
+                console.log('');
+                console.log('Calculated Prices:');
+                
+                const allGrades = Object.keys(CONFIG.gradePricingDeltas);
+                allGrades.forEach(grade => {
+                    const price = getPaperCost(grade);
+                    const stifi = stifiValues[grade] || 'N/A';
+                    console.log(`${grade.padEnd(8)} - ${price.toFixed(0).padStart(4)}/ton  STIFI: ${stifi}`);
+                });
+                
+                console.log('💲 ====================================================');
+            }
+            showNotification('All paper prices logged to console', 'info');
+        }
+
+        function changePassword() {
+            const currentPassword = prompt('Enter current password:');
+            if (currentPassword === null) return;
+            
+            if (currentPassword !== CONFIG.ppwPassword) {
+                showNotification('Incorrect current password', 'error');
+                return;
+            }
+            
+            const newPassword = prompt('Enter new password:');
+            if (newPassword === null) return;
+            
+            if (newPassword.length < 4) {
+                showNotification('Password must be at least 4 characters', 'warning');
+                return;
+            }
+            
+            const confirmPassword = prompt('Confirm new password:');
+            if (confirmPassword === null) return;
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            CONFIG.ppwPassword = newPassword;
+            saveToLocalStorage();
+            showNotification('Password changed successfully!', 'success');
+        }
+
+        function updateBasePrices() {
+            CONFIG.basePrices['42L'] = parseFloat(document.getElementById('ppwBase42L').value) || 905;
+            CONFIG.basePrices['26M'] = parseFloat(document.getElementById('ppwBase26M').value) || 795;
+            CONFIG.basePrices['42WT'] = parseFloat(document.getElementById('ppwBase42WT').value) || 1185;
+            CONFIG.marketAdjustment = parseFloat(document.getElementById('ppwMarketAdj').value) || 0;
+            
+            updatePaperPricesDisplay();
+            updatePpWPriceGrid();
+            calculatePricing();
+            saveToLocalStorage(); // Auto-save on update
+            
+            showNotification('Base prices updated and saved!', 'success');
+        }
+
+        function updateMinimumOrder() {
+            const newMinimum = parseFloat(document.getElementById('minimumSqFt').value) || 5000;
+            CONFIG.minimumSqFt = newMinimum;
+            saveToLocalStorage(); // Auto-save on update
+            updateQuantityMSF(); // Update the display immediately
+            showNotification(`Minimum order updated to ${newMinimum.toLocaleString()} sq ft and saved!`, 'success');
+        }
+
+        function loadSamplePricing() {
+            CONFIG.basePrices = {
+                '42L': 905,
+                '26M': 795,  
+                '42WT': 1185
+            };
+            CONFIG.marketAdjustment = 0;
+            
+            document.getElementById('ppwBase42L').value = 905;
+            document.getElementById('ppwBase26M').value = 795;
+            document.getElementById('ppwBase42WT').value = 1185;
+            document.getElementById('ppwMarketAdj').value = 0;
+            
+            updatePaperPricesDisplay();
+            updatePpWPriceGrid();
+            saveToLocalStorage(); // Auto-save
+            
+            showNotification('Sample pricing loaded and saved!', 'success');
+        }
+
+        function exportPricingCSV() {
+            let csv = 'Grade,Vendor,BW,Price_Per_Ton,STIFI\n';
+            
+            Object.keys(CONFIG.gradePricingDeltas).forEach(grade => {
+                const price = getPaperCost(grade);
+                const bw = getGradeBasisWeight(grade);
+                const stifi = stifiValues[grade] || 'N/A';
+                const vendor = grade.includes('M') ? 'MPC' : grade.includes('W') ? 'WRK' : 'MPC';
+                
+                csv += `${grade},${vendor},${bw},${price.toFixed(2)},${stifi}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'GT_Paper_Pricing.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Pricing exported to CSV!', 'success');
+        }
+
+        // Quote management functions
+        function showSaveQuoteModal() {
+            document.getElementById('saveQuoteModal').style.display = 'block';
+        }
+
+        function closeSaveQuoteModal() {
+            document.getElementById('saveQuoteModal').style.display = 'none';
+            document.getElementById('quoteName').value = '';
+            document.getElementById('quoteNotes').value = '';
+        }
+
+        function saveQuote() {
+            const quoteName = document.getElementById('quoteName').value;
+            if (!quoteName) {
+                showNotification('Please enter a quote name', 'warning');
+                return;
+            }
+            
+            const quoteData = {
+                id: Date.now(),
+                name: quoteName,
+                date: new Date().toISOString(),
+                notes: document.getElementById('quoteNotes').value,
+                customer: document.getElementById('customer').value,
+                plant: document.getElementById('plant').value,
+                boardType: document.getElementById('boardType').value,
+                itemNumber: document.getElementById('itemNumber').value,
+                description: document.getElementById('description').value,
+                length: document.getElementById('length').value,
+                width: document.getElementById('width').value,
+                depth: document.getElementById('depth').value,
+                quantity: document.getElementById('quantity').value,
+                sellPriceM: document.getElementById('sellPriceM').value,
+                sellingPriceMSF: document.getElementById('sellingPriceMSF').value,
+                primaryPricingInput: document.getElementById('primaryPricingInput').value,
+                pricingMode: document.getElementById('pricingMode').value,
+                quoteLiner1: document.getElementById('quoteLiner1').value,
+                quoteMedium1: document.getElementById('quoteMedium1').value,
+                quoteLiner2: document.getElementById('quoteLiner2').value,
+                quoteSinglewall: document.getElementById('quoteSinglewall').value,
+                grossMarginMSF: document.getElementById('grossMarginMSF').value,
+                grossMarginTon: document.getElementById('grossMarginTon').value
+            };
+            
+            savedQuotes.push(quoteData);
+            saveToLocalStorage();
+            
+            closeSaveQuoteModal();
+            showNotification('Quote saved successfully!', 'success');
+        }
+
+        function showLoadQuoteModal() {
+            const quoteList = document.getElementById('quoteList');
+            quoteList.innerHTML = '';
+            
+            if (savedQuotes.length === 0) {
+                quoteList.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No saved quotes found</div>';
+            } else {
+                savedQuotes.forEach(quote => {
+                    const quoteItem = document.createElement('div');
+                    quoteItem.style.cssText = `
+                        background: var(--bg-secondary);
+                        border: 2px solid var(--border-color);
+                        border-radius: 15px;
+                        padding: 1.5rem;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: var(--transition);
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                    `;
+                    
+                    quoteItem.innerHTML = `
+                        <div>
+                            <h4 style="margin-bottom: 0.5rem; color: var(--accent-primary); font-weight: 700;">${quote.name}</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">${quote.customer} - ${new Date(quote.date).toLocaleDateString()}</p>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button onclick="loadQuote('${quote.id}')" style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">Load</button>
+                            <button class="clear-btn" onclick="deleteQuote('${quote.id}')" style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">Delete</button>
+                        </div>
+                    `;
+                    
+                    quoteItem.addEventListener('mouseenter', function() {
+                        this.style.background = 'var(--bg-glass-hover)';
+                        this.style.transform = 'translateX(10px) scale(1.02)';
+                        this.style.boxShadow = '0 10px 30px rgba(0, 168, 107, 0.15)';
+                        this.style.borderColor = 'var(--accent-primary)';
+                    });
+                    
+                    quoteItem.addEventListener('mouseleave', function() {
+                        this.style.background = 'var(--bg-secondary)';
+                        this.style.transform = 'none';
+                        this.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.05)';
+                        this.style.borderColor = 'var(--border-color)';
+                    });
+                    
+                    quoteList.appendChild(quoteItem);
+                });
+            }
+            
+            document.getElementById('loadQuoteModal').style.display = 'block';
+        }
+
+        function closeLoadQuoteModal() {
+            document.getElementById('loadQuoteModal').style.display = 'none';
+        }
+
+        function loadQuote(quoteId) {
+            const quote = savedQuotes.find(q => q.id == quoteId);
+            if (!quote) return;
+            
+            document.getElementById('customer').value = quote.customer || '';
+            document.getElementById('plant').value = quote.plant || 'Lebanon';
+            document.getElementById('boardType').value = quote.boardType || 'SingleWall';
+            document.getElementById('itemNumber').value = quote.itemNumber || '';
+            document.getElementById('description').value = quote.description || '';
+            document.getElementById('length').value = quote.length || '';
+            document.getElementById('width').value = quote.width || '';
+            document.getElementById('depth').value = quote.depth || '';
+            document.getElementById('quantity').value = quote.quantity || '';
+            
+            document.getElementById('pricingMode').value = quote.pricingMode || 'sellingPrice';
+            document.getElementById('primaryPricingInput').value = quote.primaryPricingInput || '';
+            switchPricingMode();
+            
+            document.getElementById('quoteLiner1').value = quote.quoteLiner1 || '23M';
+            document.getElementById('quoteMedium1').value = quote.quoteMedium1 || '23M';
+            document.getElementById('quoteLiner2').value = quote.quoteLiner2 || '23M';
+            document.getElementById('quoteSinglewall').value = quote.quoteSinglewall || 'C';
+            
+            updateBlankDimensions();
+            updateQuotedCombo();
+            calculateECTandBoxCompression();
+            updatePaperPricesDisplay();
+            calculatePricing();
+            
+            closeLoadQuoteModal();
+            showNotification('Quote loaded successfully!', 'success');
+        }
+
+        function deleteQuote(quoteId) {
+            if (confirm('Are you sure you want to delete this quote?')) {
+                savedQuotes = savedQuotes.filter(q => q.id != quoteId);
+                saveToLocalStorage();
+                showLoadQuoteModal();
+                showNotification('Quote deleted', 'warning');
+            }
+        }
+
+        // Data Manager Functions
+        function showDataManagerModal() {
+            document.getElementById('dataManagerModal').style.display = 'block';
+        }
+
+        function closeDataManagerModal() {
+            document.getElementById('dataManagerModal').style.display = 'none';
+        }
+
+        // PDF Export
+        async function exportToPDF() {
+            try {
+                showNotification('PDF export feature requires jsPDF library', 'info');
+                // PDF export implementation would go here
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF. Please try again.', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 15px;
+                color: white;
+                font-weight: 700;
+                z-index: 10000;
+                animation: slideInRight 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(15px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                max-width: 350px;
+            `;
+            
+            const colors = {
+                success: 'linear-gradient(135deg, #00a86b, #00cc6a)',
+                warning: 'linear-gradient(135deg, #ff8c00, #e07600)',
+                error: 'linear-gradient(135deg, #e53e3e, #c53030)',
+                info: 'linear-gradient(135deg, #3182ce, #2c5aa0)'
+            };
+            
+            notification.style.background = colors[type] || colors.info;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.23, 1, 0.32, 1)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 400);
+            }, 4000);
+        }
+
+        // ===== PLANT MANAGEMENT SYSTEM =====
+        let customPlants = [];
+        let deletedDefaultPlants = [];
+        const defaultPlants = [
+            { name: 'Covington', code: 'Covington', renewable: 15, fluteC: 1.43, fluteB: 1.32, fluteE: 1.27, isDefault: true },
+            { name: 'Lebanon', code: 'Lebanon', renewable: 25, fluteC: 1.43, fluteB: 1.32, fluteE: 1.27, isDefault: true },
+            { name: 'IL / WI', code: 'IL / WI', renewable: 10, fluteC: 1.43, fluteB: 1.32, fluteE: 1.27, isDefault: true },
+            { name: 'Dallas', code: 'Dallas', renewable: 5, fluteC: 1.409, fluteB: 1.302, fluteE: 1.224, isDefault: true },
+            { name: 'SFS', code: 'SFS', renewable: 30, fluteC: 1.409, fluteB: 1.32, fluteE: 1.29, isDefault: true }
+        ];
+
+        function loadPlantsFromStorage() {
+            try {
+                if (storageAvailable) {
+                    const saved = localStorage.getItem('gtSuite_customPlants');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        customPlants = data.customPlants || [];
+                        deletedDefaultPlants = data.deletedDefaultPlants || [];
+                        updatePlantSelects();
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load custom plants:', error);
+            }
+        }
+
+        function savePlantsToStorage() {
+            try {
+                if (storageAvailable) {
+                    const data = {
+                        customPlants: customPlants,
+                        deletedDefaultPlants: deletedDefaultPlants
+                    };
+                    localStorage.setItem('gtSuite_customPlants', JSON.stringify(data));
+                }
+            } catch (error) {
+                console.warn('Could not save custom plants:', error);
+            }
+        }
+
+        function updatePlantSelects() {
+            const plantSelects = [
+                document.getElementById('plant'),
+                document.getElementById('carbonPlant')
+            ].filter(el => el !== null);
+            
+            plantSelects.forEach(select => {
+                const currentValue = select.value;
+                
+                select.innerHTML = '';
+                
+                // Filter out deleted default plants
+                const activeDefaultPlants = defaultPlants.filter(p => !deletedDefaultPlants.includes(p.code));
+                
+                if (activeDefaultPlants.length > 0) {
+                    const defaultGroup = document.createElement('optgroup');
+                    defaultGroup.label = 'Default Plants';
+                    activeDefaultPlants.forEach(plant => {
+                        const option = document.createElement('option');
+                        option.value = plant.code;
+                        option.textContent = plant.name;
+                        defaultGroup.appendChild(option);
+                    });
+                    select.appendChild(defaultGroup);
+                }
+                
+                if (customPlants.length > 0) {
+                    const customGroup = document.createElement('optgroup');
+                    customGroup.label = 'Custom Plants';
+                    customPlants.forEach(plant => {
+                        const option = document.createElement('option');
+                        option.value = plant.code;
+                        option.textContent = plant.name;
+                        customGroup.appendChild(option);
+                    });
+                    select.appendChild(customGroup);
+                }
+                
+                if (currentValue && select.querySelector(`option[value="${currentValue}"]`)) {
+                    select.value = currentValue;
+                } else if (select.options.length > 0) {
+                    select.selectedIndex = 0;
+                }
+            });
+            
+            updateFluteMultipliers();
+        }
+
+        function updateFluteMultipliers() {
+            // Filter out deleted default plants
+            const activeDefaultPlants = defaultPlants.filter(p => !deletedDefaultPlants.includes(p.code));
+            const allPlants = [...activeDefaultPlants, ...customPlants];
+            
+            if (typeof fluteMultipliers !== 'undefined') {
+                // Clear existing entries first
+                fluteMultipliers.C = {};
+                fluteMultipliers.B = {};
+                fluteMultipliers.E = {};
+                
+                allPlants.forEach(plant => {
+                    fluteMultipliers.C[plant.code] = plant.fluteC;
+                    fluteMultipliers.B[plant.code] = plant.fluteB;
+                    fluteMultipliers.E[plant.code] = plant.fluteE;
+                });
+            }
+            
+            if (typeof carbonFactors !== 'undefined' && carbonFactors.gridEmissions) {
+                allPlants.forEach(plant => {
+                    carbonFactors.gridEmissions[plant.code] = 0.55 * (1 - plant.renewable / 100);
+                });
+            }
+        }
+
+        function showPlantManagerModal() {
+            displayPlantList();
+            document.getElementById('plantManagerModal').style.display = 'block';
+        }
+
+        function closePlantManagerModal() {
+            document.getElementById('plantManagerModal').style.display = 'none';
+        }
+
+        function displayPlantList() {
+            const container = document.getElementById('plantList');
+            const activeDefaultPlants = defaultPlants.filter(p => !deletedDefaultPlants.includes(p.code));
+            const allPlants = [...activeDefaultPlants, ...customPlants];
+            
+            if (allPlants.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No plants available. Add a new plant to continue.</div>';
+                return;
+            }
+            
+            container.innerHTML = allPlants.map(plant => {
+                const isDefault = plant.isDefault;
+                return `
+                    <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 10px; padding: 1rem; margin-bottom: 0.5rem; display: grid; grid-template-columns: 1fr auto; gap: 1rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <strong style="color: var(--accent-primary);">${plant.name}</strong>
+                                ${plant.code !== plant.name ? `<span style="color: var(--text-secondary);">(${plant.code})</span>` : ''}
+                                ${isDefault ? '<span style="padding: 0.25rem 0.5rem; background: var(--accent-info); color: white; border-radius: 5px; font-size: 0.75rem;">DEFAULT</span>' : ''}
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                Renewable: ${plant.renewable}% | 
+                                Flutes - C: ${plant.fluteC}, B: ${plant.fluteB}, E: ${plant.fluteE}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            ${!isDefault ? `
+                                <button onclick="editPlant('${plant.code}')" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Edit</button>
+                            ` : ''}
+                            <button onclick="deletePlant('${plant.code}', ${isDefault})" class="clear-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addNewPlant() {
+            const name = document.getElementById('newPlantName').value.trim();
+            const code = document.getElementById('newPlantCode').value.trim() || name;
+            const renewable = parseFloat(document.getElementById('newPlantSolar').value) || 10;
+            const fluteC = parseFloat(document.getElementById('newPlantFluteC').value) || 1.43;
+            const fluteB = parseFloat(document.getElementById('newPlantFluteB').value) || 1.32;
+            const fluteE = parseFloat(document.getElementById('newPlantFluteE').value) || 1.27;
+            
+            if (!name) {
+                showNotification('Please enter a plant name', 'warning');
+                return;
+            }
+            
+            const allPlants = [...defaultPlants, ...customPlants];
+            if (allPlants.some(p => p.code === code)) {
+                showNotification('A plant with this code already exists', 'warning');
+                return;
+            }
+            
+            const newPlant = {
+                name,
+                code,
+                renewable,
+                fluteC,
+                fluteB,
+                fluteE,
+                isDefault: false
+            };
+            
+            customPlants.push(newPlant);
+            savePlantsToStorage();
+            updatePlantSelects();
+            displayPlantList();
+            
+            document.getElementById('newPlantName').value = '';
+            document.getElementById('newPlantCode').value = '';
+            document.getElementById('newPlantSolar').value = '10';
+            document.getElementById('newPlantFluteC').value = '';
+            document.getElementById('newPlantFluteB').value = '';
+            document.getElementById('newPlantFluteE').value = '';
+            
+            showNotification('Plant added successfully!', 'success');
+        }
+
+        function editPlant(code) {
+            const plant = customPlants.find(p => p.code === code);
+            if (!plant) return;
+            
+            document.getElementById('newPlantName').value = plant.name;
+            document.getElementById('newPlantCode').value = plant.code;
+            document.getElementById('newPlantSolar').value = plant.renewable;
+            document.getElementById('newPlantFluteC').value = plant.fluteC;
+            document.getElementById('newPlantFluteB').value = plant.fluteB;
+            document.getElementById('newPlantFluteE').value = plant.fluteE;
+            
+            customPlants = customPlants.filter(p => p.code !== code);
+            savePlantsToStorage();
+            updatePlantSelects();
+            displayPlantList();
+        }
+
+        function deletePlant(code, isDefault) {
+            const plantName = isDefault ? 
+                defaultPlants.find(p => p.code === code)?.name : 
+                customPlants.find(p => p.code === code)?.name;
+                
+            if (confirm(`Are you sure you want to delete ${plantName}?`)) {
+                if (isDefault) {
+                    // Add to deleted list
+                    if (!deletedDefaultPlants.includes(code)) {
+                        deletedDefaultPlants.push(code);
+                    }
+                } else {
+                    // Remove from custom plants
+                    customPlants = customPlants.filter(p => p.code !== code);
+                }
+                
+                savePlantsToStorage();
+                updatePlantSelects();
+                displayPlantList();
+                showNotification(`${plantName} deleted`, 'warning');
+            }
+        }
+
+        function resetToDefaultPlants() {
+            if (confirm('This will restore all default plants and remove all custom plants. Are you sure?')) {
+                customPlants = [];
+                deletedDefaultPlants = [];
+                savePlantsToStorage();
+                updatePlantSelects();
+                displayPlantList();
+                showNotification('All default plants restored', 'info');
+            }
+        }
+
+        function exportPlantData() {
+            const activeDefaultPlants = defaultPlants.filter(p => !deletedDefaultPlants.includes(p.code));
+            const allPlants = [...activeDefaultPlants, ...customPlants];
+            const exportData = {
+                plants: allPlants,
+                deletedDefaultPlants: deletedDefaultPlants,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const json = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `GT_Plants_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Plant data exported!', 'success');
+        }
+        // ===== END OF PLANT MANAGEMENT SYSTEM =====
+
+        // Setup event listeners
+        function setupEventListeners() {
+            ['length', 'width', 'depth'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateBlankDimensions);
+            });
+            
+            document.getElementById('quantity').addEventListener('input', updateQuantityMSF);
+            
+            ['quoteLiner1', 'quoteMedium1', 'quoteLiner2', 'quoteSinglewall'].forEach(id => {
+                document.getElementById(id).addEventListener('change', function() {
+                    updateQuotedCombo();
+                    calculateECTandBoxCompression();
+                    updatePaperPricesDisplay();
+                    // Auto-refresh pricing if we have all inputs
+                    const sellingPrice = parseFloat(document.getElementById('primaryPricingInput').value) || 0;
+                    if (sellingPrice > 0) {
+                        calculatePricing();
+                    }
+                });
+            });
+            
+            document.getElementById('plant').addEventListener('change', function() {
+                calculateECTandBoxCompression();
+                // Auto-refresh pricing if we have all inputs
+                const sellingPrice = parseFloat(document.getElementById('primaryPricingInput').value) || 0;
+                if (sellingPrice > 0) {
+                    calculatePricing();
+                }
+            });
+            
+            document.getElementById('primaryPricingInput').addEventListener('input', function() {
+                calculatePricing();
+            });
+        }
+
+        // Modal close on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Global PPW API for console use
+        window.PPW = {
+            showAllPrices: showAllPaperPrices,
+            updateBasePrice: (reference, price) => {
+                console.warn('⚠️ Base price updates require password authentication. Please use the UI.');
+                showPpWModal();
+            },
+            exportCSV: exportPricingCSV,
+            loadSample: () => {
+                console.warn('⚠️ Loading sample pricing requires password authentication. Please use the UI.');
+                showPpWModal();
+            },
+            getPrice: getPaperCost,
+            showPricing: showPpWModal
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStorageAvailability();
+            setupEventListeners();
+            updateBlankDimensions();
+            updateQuotedCombo();
+            calculateECTandBoxCompression();
+            updatePaperPricesDisplay();
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            
+            // Load saved data from localStorage
+            const dataLoaded = loadFromLocalStorage();
+            
+            // Load plants
+            loadPlantsFromStorage();
+            updatePlantSelects();
+            
+            // Only load example data if no saved data exists
+            if (!dataLoaded) {
+                setTimeout(loadExampleData, 500);
+            }
+        });
+
+        // Console help
+        console.log('🛠️ GT Advanced Suite with PpW Pricing - Console Commands:');
+        console.log('💲 PPW.showAllPrices() - Display all current paper prices');
+        console.log('💲 PPW.updateBasePrice("42L", 910) - Update base prices (requires password)');
+        console.log('💲 PPW.getPrice("23M") - Get current price for any grade');
+        console.log('💲 PPW.showPricing() - Open PpW pricing modal (requires password)');
+        console.log('💲 PPW.exportCSV() - Export pricing to CSV');
+        console.log('💲 PPW.loadSample() - Load sample Excel pricing (requires password)');
+        console.log('');
+        console.log('🎯 Example Usage:');
+        console.log('   PPW.getPrice("26M")  // Get price without authentication');
+        console.log('   PPW.showPricing()    // Opens password prompt');
+        console.log('PWA install available');
+    </script>
+
+    <script>
+        // Register Service Worker for offline functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // Add install prompt for PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Optionally, show your own install button
+            console.log('PWA install available');
+        });
+    </script>
+
+</body>
+</html>
